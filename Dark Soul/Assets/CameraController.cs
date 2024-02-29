@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-    public PlayerInput pi;
+    public IUserInput pi;
     public float horizontalSpeed;
     public float verticalSpeed;
     public float cameraDampSpeed;
@@ -22,8 +22,13 @@ public class CameraController : MonoBehaviour
     {
         cameraHandle = transform.parent.gameObject;
         playHandle = cameraHandle.transform.parent.gameObject;
-        model = playHandle.GetComponent<ActorController>().model;
+        ActorController ac = playHandle.GetComponent<ActorController>();
+        model = ac.model;
+        pi = ac.pi;
         chasingCamera = Camera.main.gameObject;
+
+        // 锁住鼠标（ESC退出）
+        Cursor.lockState = CursorLockMode.Locked;
     }
 
     // Update is called once per frame (Fixed)
@@ -48,6 +53,7 @@ public class CameraController : MonoBehaviour
             ref cameraDampVelocity,
             cameraDampSpeed);
         // 跟随相机旋转后被赋予新世界欧拉角
-        chasingCamera.transform.eulerAngles = transform.eulerAngles;
+        //chasingCamera.transform.eulerAngles = transform.eulerAngles;
+        chasingCamera.transform.LookAt(cameraHandle.transform);
     }
 }

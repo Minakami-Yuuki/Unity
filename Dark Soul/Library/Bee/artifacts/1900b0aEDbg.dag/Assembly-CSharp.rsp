@@ -359,8 +359,14 @@
 "Assets/FSMOnEnter.cs"
 "Assets/FSMOnExit.cs"
 "Assets/FSMOnUpdate.cs"
+"Assets/IUserInput.cs"
+"Assets/JoystickInput.cs"
+"Assets/KeyboardInput.cs"
+"Assets/LeftArmAnimFix.cs"
+"Assets/MyButton.cs"
 "Assets/OnGroundSensor.cs"
-"Assets/PlayerInput.cs"
+"Assets/RootMotionController.cs"
+"Assets/TesterJoyStick.cs"
 "Assets/TriggerController.cs"
 -langversion:9.0
 

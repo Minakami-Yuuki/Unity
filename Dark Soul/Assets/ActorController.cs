@@ -9,14 +9,16 @@ public class ActorController : MonoBehaviour
 
     // 模型
     public GameObject model;
-    public PlayerInput pi;
+    public IUserInput pi;
     // 行走、奔跑速度
     public float walkSpeed;
     public float runMultiplier;
     // 跳跃高度
     public float jumpVelocity;
     // 翻滚高度
-    public float rollVelocity;
+    public float rollHeightVelocity;
+    // 翻滚距离
+    public float rollLengthVelocity;
 
     // 摩擦力
     [Space(10)]
@@ -41,11 +43,21 @@ public class ActorController : MonoBehaviour
     private bool canAttack;
     // 攻击缓动
     private float lerpTarget;
+    // 攻击3前进距离
+    private Vector3 deltaPostion;
 
     // 激活
     void Awake()
     {
-        pi = GetComponent<PlayerInput>();
+        IUserInput[] inputs = GetComponents<IUserInput>();
+        foreach (var input in inputs)
+        {
+            if (input.enabled)
+            {
+                pi = input;
+                break;
+            }
+        }
         animator = model.GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
         col = GetComponent<CapsuleCollider>();
@@ -57,6 +69,8 @@ public class ActorController : MonoBehaviour
         // 步长 + 渐变 （走路到跑步的 50% 过渡）
         animator.SetFloat("forward", 
             pi.Dmag * Mathf.Lerp(animator.GetFloat("forward"), ((pi.run) ? 2.0f : 1.0f) , 0.5f));
+        // 举盾
+        animator.SetBool("defense", pi.defense);
         // 跳跃
         if (pi.jump)
         {
@@ -92,8 +106,10 @@ public class ActorController : MonoBehaviour
         // 更新bot移动
         //rigid.position += planarVec * Time.fixedDeltaTime;
         // y分量不变
+        rigid.position += deltaPostion;
         rigid.velocity = new Vector3(planarVec.x, rigid.velocity.y, planarVec.z) + thrustVec;
         thrustVec = Vector3.zero;
+        deltaPostion = Vector3.zero;
     }
 
     // 检测第0层的当前状态
@@ -158,7 +174,7 @@ public class ActorController : MonoBehaviour
         pi.inputEnabled = false;
         lockPlanar = true;
         // 赋予Y轴冲量
-        thrustVec = new Vector3(0, rollVelocity, 0);
+        thrustVec = new Vector3(rollHeightVelocity, rollHeightVelocity, 0);
     }
 
     void OnJabEnter()
@@ -206,5 +222,15 @@ public class ActorController : MonoBehaviour
         // 攻击缓动
         animator.SetLayerWeight(animator.GetLayerIndex("attack"),
             Mathf.Lerp(animator.GetLayerWeight(animator.GetLayerIndex("attack")), lerpTarget, 0.4f));
+    }
+
+    void OnUpdateRM(object _deltaPos)
+    {
+        // 仅攻击3进行位置前移
+        if (CheckState("attack1hC", "attack"))
+        {
+            // 减少缓动
+            deltaPostion += 0.4f * deltaPostion + 0.6f * (Vector3)_deltaPos;
+        }
     }
 }

@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerInput : MonoBehaviour
+public class KeyboardInput : IUserInput
 {
     [Header("===== Setting keys =====")]
     public string keyUp = "w";
@@ -20,40 +20,25 @@ public class PlayerInput : MonoBehaviour
     public string keyC;
     public string keyD;
 
-    // once push
-    public bool run;
-    // twice trigger
-    public bool jump;
-    // attack trigger
-    public bool attack;
-
-    [Header("===== Output keys =====")]
-    public float Dup;
-    public float Dright;
-    public float DJup;
-    public float DJright;
-    public float Dmag;
-    public Vector3 Dvec;
-    //public float targetDup;
-    //public float targetDright;
-    //public float velocityDup;
-    //public float velocityDright;
-
-    [Header("===== Others =====")]
-    public bool inputEnabled = true;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+    [Header("===== Mouse Settings =====")]
+    public bool mouseEnable = false;
+    public float mouseSensitivityX;
+    public float mouseSensitivityY;
 
     // Update is called once per frame
     void Update()
     {
         // 摄像机水平、竖直方向设置（取消缓动）
-        DJup = ((Input.GetKey(keyJUp) ? 1.0f : 0.0f) - (Input.GetKey(keyJDown) ? 1.0f : 0.0f));
-        DJright = ((Input.GetKey(keyJRight) ? 1.0f : 0.0f) - (Input.GetKey(keyJLeft) ? 1.0f : 0.0f));
+        if (mouseEnable)
+        {
+            DJup = Input.GetAxis("Mouse Y") * mouseSensitivityX;
+            DJright = Input.GetAxis("Mouse X") * mouseSensitivityY;
+        }
+        else
+        {
+            DJup = ((Input.GetKey(keyJUp) ? 1.0f : 0.0f) - (Input.GetKey(keyJDown) ? 1.0f : 0.0f));
+            DJright = ((Input.GetKey(keyJRight) ? 1.0f : 0.0f) - (Input.GetKey(keyJLeft) ? 1.0f : 0.0f));
+        }
         // 角色水平、竖直方向设置 （取消缓动）
         Dup = ((Input.GetKey(keyUp) ? 1.0f : 0.0f) - (Input.GetKey(keyDown) ? 1.0f : 0.0f));
         Dright = ((Input.GetKey(keyRight) ? 1.0f : 0.0f) - (Input.GetKey(keyLeft) ? 1.0f : 0.0f));
@@ -73,6 +58,8 @@ public class PlayerInput : MonoBehaviour
         jump = Input.GetKeyDown(keyB);
         // 攻击动作
         attack = Input.GetKeyDown(keyC);
+        // 盾牌防御
+        defense = Input.GetKey(keyD);
 
         if (!inputEnabled)
         {
