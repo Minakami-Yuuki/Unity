@@ -31,6 +31,8 @@ public class JoystickInput : IUserInput
         buttontLR.tickAxis(Input.GetAxis(triggerLR));
         buttonLB.tickButton(Input.GetButton(btnLB));
 
+        print(buttonA.IsExtending && buttonA.IsPressing);
+
         // 摄像机水平、竖直方向设置（取消缓动）(右摇杆)
         DJup = Input.GetAxis(axisJup) * (-1.0f);
         DJright = Input.GetAxis(axisJright);
